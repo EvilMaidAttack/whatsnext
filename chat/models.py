@@ -2,6 +2,10 @@ from django.db import models
 from django.conf import settings
 
 # Create your models here.
+def upload_user_path(instance, filename):
+    return f'chat_exports/{instance.profile.user.username}/{filename}'
+
+
 class Profile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, primary_key = True)
     bio = models.TextField()
@@ -9,6 +13,12 @@ class Profile(models.Model):
 
     def __str__(self):
         return f'{self.user.last_name}, {self.user.first_name}'
+    
+    def first_name(self):
+        return self.user.first_name
+    
+    def last_name(self):
+        return self.user.last_name
 
 
 class ChatRoom(models.Model):
@@ -27,11 +37,21 @@ class Message(models.Model):
         profile = "user", "User"
         ai = "ai", "AI"
 
-    sender = models.CharField(max_length = 4, choices = SenderChoices)
-    sent_at = models.DateTimeField(auto_now_add = True)
     chat_room = models.ForeignKey(ChatRoom, on_delete = models.CASCADE, related_name = "messages")
-    message_content = models.TextField()
+    sender = models.CharField(max_length = 4, choices = SenderChoices)
+    content = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add = True)
     is_received = models.BooleanField(default = False)
 
     def __str__(self):
-        return f'Message from {self.sender} - sent at {set}'
+        return f'Message from {self.sender} - sent at {self.timestamp}'
+    
+
+class ChatExport(models.Model):
+    profile = models.ForeignKey(Profile, on_delete = models.CASCADE, related_name = "chat_exports")
+    export = models.FileField(upload_to = upload_user_path)
+    uploaded_at = models.DateTimeField(auto_now_add = True)
+
+    def __str__(self):
+        return f'Chat export by {self.profile} on {self.uploaded_at}'
+
