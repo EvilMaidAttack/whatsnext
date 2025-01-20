@@ -23,6 +23,8 @@ class Profile(models.Model):
 
 class ChatRoom(models.Model):
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="chat_rooms")
+    chat_export = models.OneToOneField("ChatExport", on_delete = models.SET_NULL, 
+                                       null = True, blank = True, related_name = "chat_room")
     chat_partner_name = models.CharField(max_length = 50)
     is_active = models.BooleanField(default = True)
     created_at = models.DateTimeField(auto_now_add = True)
