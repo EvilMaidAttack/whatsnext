@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+import uuid
 
 # Create your models here.
 def upload_user_path(instance, filename):
@@ -22,6 +23,7 @@ class Profile(models.Model):
 
 
 class ChatRoom(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="chat_rooms")
     chat_export = models.OneToOneField("ChatExport", on_delete = models.SET_NULL, 
                                        null = True, blank = True, related_name = "chat_room")
