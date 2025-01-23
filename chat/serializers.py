@@ -7,17 +7,24 @@ class MessageSeriaizer(serializers.ModelSerializer):
     class Meta:
         model = Message
         fields = ['id', 'sender', 'content', 'timestamp', 'is_received']
+        
+    def create(self, validated_data):
+        message = Message.objects.create(chat_room_id = self.context.get('chatroom_id'), **validated_data)
+        return message
+
 
 class ReceiveMessageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Message
         fields = ['is_received']
 
+
 class ChatRoomDetailSerializer(serializers.ModelSerializer):
     messages = MessageSeriaizer(many = True)
     class Meta:
         model = ChatRoom
         fields = ['id', 'profile', 'chat_partner_name', 'is_active', 'created_at', 'updated_at', 'messages']
+
         
 class ChatRoomSerializer(serializers.ModelSerializer):
     last_message = serializers.SerializerMethodField()
@@ -36,3 +43,9 @@ class ChatRoomSerializer(serializers.ModelSerializer):
             }
         else:
             return None
+        
+
+class ProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Profile
+        fields = ["user_id", 'bio', 'status']

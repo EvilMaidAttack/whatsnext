@@ -25,6 +25,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name="chatexport",
             name="export",
-            field=models.FileField(upload_to=chat.models.upload_user_path),
+            field=models.FileField(upload_to=chat.models.user_upload_path),
         ),
     ]

@@ -3,7 +3,7 @@ from django.conf import settings
 import uuid
 
 # Create your models here.
-def upload_user_path(instance, filename):
+def user_upload_path(instance, filename):
     return f'chat_exports/{instance.profile.user.username}/{filename}'
 
 
@@ -53,7 +53,7 @@ class Message(models.Model):
 
 class ChatExport(models.Model):
     profile = models.ForeignKey(Profile, on_delete = models.CASCADE, related_name = "chat_exports")
-    export = models.FileField(upload_to = upload_user_path)
+    export = models.FileField(upload_to = user_upload_path)
     uploaded_at = models.DateTimeField(auto_now_add = True)
 
     def __str__(self):
