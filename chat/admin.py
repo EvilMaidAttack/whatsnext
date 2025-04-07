@@ -17,7 +17,7 @@ class ProfileAdmin(admin.ModelAdmin):
 
 @admin.register(ChatRoom)
 class ChatRoomAdmin(admin.ModelAdmin):
-    list_display = ['profile', 'chat_partner_name', 'is_active', 'created_at', 'updated_at']
+    list_display = ['id', 'profile', 'chat_partner_name', 'is_active', 'created_at', 'updated_at']
     autocomplete_fields = ['profile']
     inlines = [MessageInline]
 
@@ -25,6 +25,6 @@ class ChatRoomAdmin(admin.ModelAdmin):
 @admin.register(ChatExport)
 class ChatExportAdmin(admin.ModelAdmin):
     autocomplete_fields = ['profile']
-    list_display = ['profile', 'uploaded_at']
+    list_display = ['export', 'profile', 'uploaded_at']
 
 

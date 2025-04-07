@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 from .models import ChatRoom, Message, Profile, ChatExport
 
-# TODO: When posting chat_room has to be defined, but it can be set from the url
+
 class MessageSeriaizer(serializers.ModelSerializer):
     class Meta:
         model = Message
@@ -30,7 +30,11 @@ class ChatRoomSerializer(serializers.ModelSerializer):
     last_message = serializers.SerializerMethodField()
     class Meta:
         model = ChatRoom
-        fields = ['id', 'profile', 'chat_partner_name', 'is_active', 'created_at', 'updated_at', 'last_message']
+        fields = ['id', 'chat_export', 'chat_partner_name', 'is_active', 'created_at', 'updated_at', 'last_message']
+    
+    def create(self, validated_data):
+        chat_room = ChatRoom.objects.create(profile_id = self.context.get('profile_id'), **validated_data)
+        return chat_room
     
     def get_last_message(self, obj:ChatRoom):
         last_message : Message | None = obj.messages.order_by('-timestamp').first()
@@ -49,3 +53,13 @@ class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
         fields = ["user_id", 'bio', 'status']
+
+
+class ChatExportSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ChatExport
+        fields = ['id', 'profile_id', 'export', 'uploaded_at']
+    
+    def create(self, validated_data):
+        chat_export = ChatExport.objects.create(profile_id = self.context.get('profile_id'), **validated_data)
+        return chat_export

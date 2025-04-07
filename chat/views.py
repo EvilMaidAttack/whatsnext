@@ -3,8 +3,8 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 from rest_framework.decorators import action
 
-from .serializers import ChatRoomSerializer, ChatRoomDetailSerializer, MessageSeriaizer, ReceiveMessageSerializer, ProfileSerializer
-from .models import ChatRoom, Message, Profile
+from .serializers import ChatExportSerializer, ChatRoomSerializer, ChatRoomDetailSerializer, MessageSeriaizer, ReceiveMessageSerializer, ProfileSerializer
+from .models import ChatExport, ChatRoom, Message, Profile
 
 # Create your views here.
 class ChatRoomViewSet(ModelViewSet):
@@ -15,6 +15,13 @@ class ChatRoomViewSet(ModelViewSet):
             return ChatRoomDetailSerializer
         else:
             return ChatRoomSerializer
+    
+    def get_serializer_context(self):
+        return {'profile_id': self.request.user.id}
+
+    def get_queryset(self):
+        return ChatRoom.objects.filter(profile_id = self.request.user.id).prefetch_related('messages')
+    
 
 
 class MessageViewSet(ModelViewSet):
@@ -48,3 +55,13 @@ class ProfileViewSet(ModelViewSet):
             serializer.is_valid(raise_exception = True)
             serializer.save()
             return Response(serializer.data)
+        
+
+class ChatExportViewSet(ModelViewSet):
+    serializer_class = ChatExportSerializer
+    
+    def get_queryset(self):
+        return ChatExport.objects.filter(profile_id = self.request.user.id)
+
+    def get_serializer_context(self):
+        return {'profile_id': self.request.user.id}
