@@ -6,7 +6,7 @@ import pprint
 
 router = routers.DefaultRouter()
 router.register("chatrooms", views.ChatRoomViewSet, basename="chatrooms")
-router.register("profiles", views.ProfileViewSet, basename="customers")
+router.register("profiles", views.ProfileViewSet, basename="profiles")
 router.register("exports", views.ChatExportViewSet, basename="exports")
 
 chatrooms_router = routers.NestedDefaultRouter(router, "chatrooms", lookup="chatroom")
