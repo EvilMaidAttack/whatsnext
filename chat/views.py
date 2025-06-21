@@ -38,6 +38,12 @@ class MessageViewSet(ModelViewSet):
     
     def get_queryset(self):
         return Message.objects.filter(chat_room_id = self.kwargs['chatroom_pk'])
+    
+    @action(detail=False, methods=["post"], url_path="ai-response") 
+    def generate_ai_response(self, request, chatroom_pk=None):
+        # Todo: work on this
+        pass
+    
 
 
 class ProfileViewSet(ModelViewSet):

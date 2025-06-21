@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from datetime import timedelta
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -153,3 +154,5 @@ DJOSER = {
         "current_user": "core.serializers.UserSerializer"
     }
 }
+
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
