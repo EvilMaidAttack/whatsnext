@@ -4,7 +4,8 @@ import uuid
 
 # Create your models here.
 def user_upload_path(instance, filename):
-    return f'chat_exports/{instance.profile.user.username}/{filename}'
+    foldername = f'{instance.profile.user.id}_{instance.profile.user.username.split('@')[0]}'
+    return f'chat_exports/{foldername}/{filename}'
 
 
 class Profile(models.Model):

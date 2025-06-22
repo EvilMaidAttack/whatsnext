@@ -1,10 +1,15 @@
 from django.shortcuts import render
+from rest_framework import status
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 from rest_framework.decorators import action
+import logging
 
 from .serializers import ChatExportSerializer, ChatRoomSerializer, ChatRoomDetailSerializer, MessageSeriaizer, ReceiveMessageSerializer, ProfileSerializer
 from .models import ChatExport, ChatRoom, Message, Profile
+from .services.openai_service import get_ai_response
+
+logger = logging.getLogger(__name__)
 
 # Create your views here.
 class ChatRoomViewSet(ModelViewSet):
@@ -41,9 +46,33 @@ class MessageViewSet(ModelViewSet):
     
     @action(detail=False, methods=["post"], url_path="ai-response") 
     def generate_ai_response(self, request, chatroom_pk=None):
-        # Todo: work on this
-        pass
-    
+        # load the chatroom
+        try:
+            chatroom = ChatRoom.objects.get(id=chatroom_pk)
+        except ChatRoom.DoesNotExist:
+            return Response({'error': 'Chatroom not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+        # get all messages and order them from newest to oldest
+        messages_queryset = self.get_queryset().order_by('-timestamp')
+
+        # get ai response
+        try:
+            ai_response = get_ai_response(messages_queryset, model="gpt-4.1", history_length=10)
+        except Exception as e:
+            logger.exception("AI response generation failed")
+            return Response({'error': str(e)}, status = status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+        # create new message
+        ai_message = Message.objects.create(
+            sender = "ai",
+            content = ai_response,
+            is_received = True,
+            chat_room = chatroom
+            )
+        
+        return Response(MessageSeriaizer(ai_message).data, status=status.HTTP_201_CREATED)
+
+
 
 
 class ProfileViewSet(ModelViewSet):
